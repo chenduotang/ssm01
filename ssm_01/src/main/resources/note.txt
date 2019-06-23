@@ -1,0 +1,52 @@
+1.springmvc json数据的响应和格式化
+   1.fastjson (推荐)
+   2.jackson
+
+   1.@ResponseBody注解只能返回字符串，但是仅仅是字符串
+     不能是对象，如果想要返回对象，必须要配置json转换器
+
+   配置了转换器后：
+        @ResponseBody注解既可以返回json字符串，也可以返回json对象，
+        甚至可以将任何的数据，转换成json对象返回，比如，java对象，map等等
+
+   json转换日期类型会变成毫秒数：
+
+        解决方案一(推荐)：使用 @JSONField(format = "yyyy-MM-dd")注解
+
+        解决方案二：配置json消息转换器，缺点是只能转换成年月日，时分秒格式，
+                如果只想要年月日，那就用@JSONField吧
+
+            <property name="features">
+            		<list>
+            			<!-- 默认就是年月日时分秒格式 -->
+            			<value>WriteDateUseDateFormat</value>
+            		</list>
+            </property>
+
+
+2.学习springmvc表单提交封装对象的问题
+  也就是之前遇到的400错误，日期类型封装的问题
+
+    1.加@DateTimeFormat(pattern = "yyyy-MM-dd")注解（推荐的一种）
+    2.springmvc在封装表单对象的的时候调用内置的ConversionService来封装对象
+      遇到日期类型，不知道如何去封装，报400错误，所以我们可以重写ConversionService
+      接口，自定义封装规则
+    3.@InitBinder注解，也是自定义封装java对象
+
+3.ssm整合
+    1.引入所有jar包
+    2.配置web.xml
+          1.spring监听器（listener,context-param）
+          2.springmvc分发器
+    3.applicationContext.xml
+          1.包扫描
+          2.数据源
+          3.sqlsessionfactorybean（xml路径）
+          4.配置mybatis接口扫描
+          5.配置事务管理器
+    4.mybatis-config.xml
+          配置<settings>,实体类别名
+    5.springmvc-servlet.xml
+          1.包扫描
+          2.json格式转换器
+          3.视图解析器
